@@ -5,11 +5,12 @@ import pl.poblock.connection.decode.wizz.WizzDecoder;
 
 public class DecoderFactory {
 
-	public static Decoder getDecoder(String url, String response) {
-		if(url.contains("wizz")) {
+	public static Decoder getDecoder(String linia, String response) {
+		if(linia.equals("Wizzair")) {
 			return new WizzDecoder(response);
-		} else {
+		} else if(linia.equals("Ryanair")) {
 			return new RyanDecoder(response);
 		}
+		return null;
 	}
 }

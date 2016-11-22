@@ -1,27 +1,34 @@
 package pl.poblock.connection;
 
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 import pl.poblock.connection.decode.Decoder;
 import pl.poblock.connection.decode.DecoderFactory;
+import pl.poblock.connection.request.HttpGetFlight;
+import pl.poblock.connection.request.RyanRequest;
+import pl.poblock.connection.request.WizzRequest;
 
 public class Connection {
 	
-	private String skad = "GDN";
-	private String dokad = "BGY";
-	private String wizz = "https://cdn.static.wizzair.com/pl-PL/TimeTableAjax?departureIATA="+skad+"&arrivalIATA="+dokad+"&year=2017&month=3";
-	private String ryan = "https://desktopapps.ryanair.com/pl-pl/availability?ADT=1&CHD=0"
-			+ "&DateIn=2017-03-29&DateOut=2017-03-15&Destination="+dokad+"&FlexDaysIn=6&FlexDaysOut=6&INF=0&Origin="+skad+"&RoundTrip=true&TEEN=0";
+	private PoolingHttpClientConnectionManager cm;
 	
 	public Connection() {
 		try {
-			sendGet(wizz);
-			sendGet(ryan);
+			cm = new PoolingHttpClientConnectionManager();
+	        cm.setMaxTotal(100);
+			connect("GDN","BGY",3,2017); // lista wszystkich polaczen
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -31,24 +38,82 @@ public class Connection {
 		}
 	}
 	
-	private void sendGet(String url) throws Exception {
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("GET");
-		con.setRequestProperty("User-Agent", "Mozilla/5.0");
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
+	private void connect(String skad, String dokad, int month, int year) throws IOException, InterruptedException {
+		CloseableHttpClient httpclient = 
+        		HttpClients.custom().setConnectionManager(cm).build();
+        try {
+            int id = 0;
+            WizzRequest wizz = new WizzRequest(id++,skad,dokad,month,year);
+            RyanRequest ryan = new RyanRequest(id++,skad,dokad,month,year);
+            
+            ArrayList<HttpGetFlight> listReq = new ArrayList<HttpGetFlight>();
+            listReq.addAll(wizz.makeRequestList());
+            listReq.addAll(ryan.makeRequestList());
 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
-		}
-		in.close();
-		String strResponse = response.toString();
-		if(strResponse!=null) {
-			Decoder decoder = DecoderFactory.getDecoder(url, strResponse);
-			decoder.decode();
-		}
+            GetThread[] threads = new GetThread[listReq.size()];
+            for (int i = 0; i < threads.length; i++) {
+                threads[i] = new GetThread(httpclient, listReq.get(i), i + 1);
+            }
+            for (int j = 0; j < threads.length; j++) {
+                threads[j].start();
+            }
+            for (int j = 0; j < threads.length; j++) {
+                threads[j].join();
+            }
+            for (int j = 0; j < threads.length; j++) {
+            	Decoder decoder = DecoderFactory.getDecoder(threads[j].httpget.getLinia(), threads[j].getResponseString());
+    			if(decoder!=null) {
+    				decoder.decode();
+    			}
+            }
+        } finally {
+            httpclient.close();
+        }
 	}
+	
+	static class GetThread extends Thread {
+
+        private final CloseableHttpClient httpClient;
+        private final HttpContext context;
+        private final HttpGetFlight httpget;
+        private final int id;
+        private String responseString;
+        
+        public GetThread(CloseableHttpClient httpClient, HttpGetFlight httpget, int id) {
+            this.httpClient = httpClient;
+            this.context = new BasicHttpContext();
+            this.httpget = httpget;
+            this.id = id;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                CloseableHttpResponse response = httpClient.execute(httpget, context);
+                try {
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null && response.getStatusLine().getStatusCode()==200) {
+                    	byte[] bytes = EntityUtils.toByteArray(entity);
+                    	String s = new String(bytes, StandardCharsets.UTF_8);
+                    	if(s!=null) {
+                    		setResponseString(s);
+                    	}
+                    }
+                } finally {
+                    response.close();
+                }
+            } catch (Exception e) {
+                System.out.println(id + " - error: " + e);
+            }
+        }
+
+		public String getResponseString() {
+			return responseString;
+		}
+
+		public void setResponseString(String responseString) {
+			this.responseString = responseString;
+		}
+
+    }
 }
