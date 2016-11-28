@@ -1,6 +1,9 @@
 package pl.poblock.connection.decode.wizz;
 
+import org.joda.time.LocalDateTime;
+
 import pl.poblock.connection.Lot;
+import pl.poblock.connection.decode.LocaleConverter;
 import pl.poblock.connection.decode.LotBuilder;
 import pl.poblock.connection.decode.wizz.model.Flight;
 
@@ -14,34 +17,20 @@ public class WizzLotBuilder implements LotBuilder {
 	private String godzinaPrzylotu;
 	private String czasLotu;
 	private String cena;
-	private String waluta;
+	private Flight flight;
 	
 	public WizzLotBuilder(String skad, String dokad, String data, String cena, Flight flight) {
-		this.lot = new Lot();
 		this.skad = skad;
 		this.dokad = dokad;
 		this.dataWylotu = data;
 		this.dataPrzylotu = data;
-		convert(cena, flight);
+		this.cena = cena;
+		this.flight = flight;
 		build();
 	}
 
-	private void convert(String cena, Flight flight) {
-		if(flight!=null) {
-			if(flight.getSTD()!=null) {
-				this.godzinaWylotu = flight.getSTD();
-			}
-			if(flight.getSTA()!=null) {
-				this.godzinaPrzylotu = flight.getSTA();
-			}
-		}
-		
-//		cena,waluta TODO
-		this.cena = cena;
-		this.waluta = cena;
-	}
-
 	public void build() {
+		this.lot = new Lot();
 		buildSkad();
 		buildDokad();
 		buildCena();
@@ -50,13 +39,14 @@ public class WizzLotBuilder implements LotBuilder {
 		buildDataPrzylotu();
 		buildGodzinaWylotu();
 		buildGodzinaPrzylotu();
+		buildCzasLotu();
 	}
 	
 	@Override
 	public String toString() {
 		return "WizzLotBuilder [skad=" + skad + ", dokad=" + dokad + ", dataWylotu=" + dataWylotu
 				+ ", godzinaWylotu=" + godzinaWylotu + ", dataPrzylotu=" + dataPrzylotu + ", godzinaPrzylotu="
-				+ godzinaPrzylotu + ", czasLotu=" + czasLotu + ", cena=" + cena + ", waluta=" + waluta + "]";
+				+ godzinaPrzylotu + ", czasLotu=" + czasLotu + ", cena=" + cena + "]";
 	}
 
 	public Lot getLot() {
@@ -72,8 +62,8 @@ public class WizzLotBuilder implements LotBuilder {
 	}
 
 	public void buildCena() {
-		// TODO Auto-generated method stub
-		
+		this.cena = LocaleConverter.getInstance().convertCurrency(cena);
+		lot.setCena(cena);
 	}
 
 	public void buildLinia() {
@@ -89,15 +79,31 @@ public class WizzLotBuilder implements LotBuilder {
 	}
 
 	public void buildGodzinaWylotu() {
+		if(flight!=null) {
+			if(flight.getSTD()!=null) {
+				this.godzinaWylotu = flight.getSTD();
+			}
+		}
 		lot.setGodzinaWylotu(godzinaWylotu);
 	}
 
 	public void buildGodzinaPrzylotu() {
+		if(flight!=null) {
+			if(flight.getSTA()!=null) {
+				this.godzinaPrzylotu = flight.getSTA();
+			}
+		}
 		lot.setGodzinaPrzylotu(godzinaPrzylotu);
 	}
 
 	public void buildCzasLotu() {
-		// TODO Auto-generated method stub
-		
+		LocalDateTime przylot = LocalDateTime.parse(dataPrzylotu+"T"+godzinaPrzylotu);
+		LocalDateTime wylot = LocalDateTime.parse(dataWylotu+"T"+godzinaWylotu);
+		String flightTime = LocaleConverter.getInstance().convertFlightTime(skad, przylot, dokad, wylot);
+		if(flightTime.equals("")) {
+			przylot = przylot.plusDays(1);
+			flightTime = LocaleConverter.getInstance().convertFlightTime(skad, przylot, dokad, wylot);
+		}
+		lot.setCzasLotu(flightTime);
 	}
 }

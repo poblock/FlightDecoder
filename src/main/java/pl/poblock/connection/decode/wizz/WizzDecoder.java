@@ -27,13 +27,14 @@ public class WizzDecoder extends Decoder {
 			for(Departure d : list) {
 				if(d.getFlights()!=null && d.getFlights().size()>0) {
 					for(Flight f : d.getFlights()) {
-						WizzLotBuilder b = new WizzLotBuilder(d.getDepartureStationCode(), d.getArrivalStationCode(), 
+						WizzLotBuilder builder = new WizzLotBuilder(d.getDepartureStationCode(), d.getArrivalStationCode(), 
 								d.getCurrentDate(), d.getMinimumPrice(), f);
-						System.out.println(b.getLot());
+						lista.add(builder.getLot());
 					}
 				}
 			}
 		}
+		System.out.println(lista);
 		return lista;
 	}
 }

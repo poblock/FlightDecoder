@@ -39,6 +39,7 @@ public class RyanDecoder extends Decoder {
 				}
 			}
 		}
+		System.out.println(lista);
 		return lista;
 	}
 }

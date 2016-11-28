@@ -1,5 +1,7 @@
 package pl.poblock.connection.decode.ryan;
 
+import org.joda.time.LocalDateTime;
+
 import pl.poblock.connection.Lot;
 import pl.poblock.connection.decode.LotBuilder;
 import pl.poblock.connection.decode.ryan.model.Fare;
@@ -20,17 +22,23 @@ public class RyanLotBuilder implements LotBuilder {
 	private String dataPrzylotu;
 	private String godzinaWylotu;
 	private String godzinaPrzylotu;
+	private Flight flight;
 	
 	public RyanLotBuilder(String skad, String dokad, Flight flight, String waluta) {
-		this.lot = new Lot();
 		this.skad = skad;
 		this.dokad = dokad;
 		this.waluta = waluta;
-		convert(flight);
+		this.flight = flight;
+		if(flight!=null) {
+			if(flight.getFaresLeft()!=null) {
+				this.pozostaloMiejsc = flight.getFaresLeft();
+			}
+		}
 		build();
 	}
 	
 	public void build() {
+		this.lot = new Lot();
 		buildSkad();
 		buildDokad();
 		buildCena();
@@ -39,27 +47,9 @@ public class RyanLotBuilder implements LotBuilder {
 		buildDataPrzylotu();
 		buildGodzinaWylotu();
 		buildGodzinaPrzylotu();
+		buildCzasLotu();
 	}
 	
-	private void convert(Flight flight) {
-		if(flight!=null) {
-			if(flight.getTime()!=null && flight.getTime().size()>0 && flight.getTime().size()==2) {
-				this.czasWylotu = flight.getTime().get(0);
-				this.czasPrzylotu = flight.getTime().get(1);
-			}
-			if(flight.getDuration()!=null) {
-				this.czasLotu = flight.getDuration();
-			}
-			if(flight.getFaresLeft()!=null) {
-				this.pozostaloMiejsc = flight.getFaresLeft();
-			}
-			if(flight.getRegularFare()!=null && flight.getRegularFare().getFares()!=null && flight.getRegularFare().getFares().size()>0) {
-				Fare first = flight.getRegularFare().getFares().get(0);
-				this.cena = first.getAmount();
-			}
-		}
-	}
-
 	@Override
 	public String toString() {
 		return "RyanLotBuilder [skad=" + skad + ", dokad=" + dokad + ", czasWylotu=" + czasWylotu + ", czasPrzylotu="
@@ -80,8 +70,12 @@ public class RyanLotBuilder implements LotBuilder {
 	}
 
 	public void buildCena() {
-		// TODO Auto-generated method stub
-		
+		if(flight!=null) {
+			if(flight.getRegularFare()!=null && flight.getRegularFare().getFares()!=null && flight.getRegularFare().getFares().size()>0) {
+				Fare first = flight.getRegularFare().getFares().get(0);
+				this.cena = first.getAmount();
+			}
+		}
 	}
 
 	public void buildLinia() {
@@ -89,6 +83,14 @@ public class RyanLotBuilder implements LotBuilder {
 	}
 
 	public void buildDataWylotu() {
+		if(flight!=null) {
+			if(flight.getTime()!=null && flight.getTime().size()>0 && flight.getTime().size()==2) {
+				this.czasWylotu = flight.getTime().get(0);
+				LocalDateTime ldt = new LocalDateTime(czasWylotu);
+				
+				System.out.println(czasWylotu+" "+new LocalDateTime(czasWylotu).toString()+" "+ldt.toDate());
+			}
+		}
 		lot.setDataWylotu(dataWylotu);
 	}
 
@@ -101,10 +103,20 @@ public class RyanLotBuilder implements LotBuilder {
 	}
 
 	public void buildGodzinaPrzylotu() {
+		if(flight!=null) {
+			if(flight.getTime()!=null && flight.getTime().size()>0 && flight.getTime().size()==2) {
+				this.czasPrzylotu = flight.getTime().get(1);
+			}
+		}
 		lot.setGodzinaPrzylotu(godzinaPrzylotu);
 	}
 
 	public void buildCzasLotu() {
+		if(flight!=null) {
+			if(flight.getDuration()!=null) {
+				this.czasLotu = flight.getDuration();
+			}
+		}
 		lot.setCzasLotu(czasLotu);
 	}
 }

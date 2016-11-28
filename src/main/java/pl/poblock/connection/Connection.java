@@ -23,31 +23,53 @@ import pl.poblock.connection.request.WizzRequest;
 public class Connection {
 	
 	private PoolingHttpClientConnectionManager cm;
+	private CloseableHttpClient httpclient;
 	
-	public Connection() {
+	public Connection() throws IOException {
 		try {
 			cm = new PoolingHttpClientConnectionManager();
 	        cm.setMaxTotal(100);
-			connect("GDN","BGY",3,2017); // lista wszystkich polaczen
+	        httpclient = HttpClients.custom().setConnectionManager(cm).build();
+//			connect("GDN","LTN",1,2017); // lista wszystkich polaczen
+			
+			connect("GDN","WAW",1,2017); 
+//			connect("BCN","SOF",1,2017);
+//			connect("KTW","BLQ",1,2017);
+//			connect("","",1,2017);
+//			connect("BEG","EIN",1,2017);
+//			connect("BGO","GDN",1,2017);
+//			connect("BRQ","LTN",1,2017);
+//			connect("BUD","BCN",1,2017);
+//			connect("OTP","BCN",1,2017);
+//			connect("BOJ","LTN",1,2017);
+//			connect("VDA","WAW",1,2017);
+//			connect("GVA","OTP",1,2017);
+//			connect("GOT","WAW",1,2017);
+//			connect("IEV","LTN",1,2017);
+//			connect("TZL","LTN",1,2017);
+//			connect("SKP","LTN",1,2017);
+//			connect("KUT","WAW",1,2017);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			httpclient.close();
 		}
 	}
 	
 	private void connect(String skad, String dokad, int month, int year) throws IOException, InterruptedException {
-		CloseableHttpClient httpclient = 
-        		HttpClients.custom().setConnectionManager(cm).build();
-        try {
+//		CloseableHttpClient httpclient = 
+//        		HttpClients.custom().setConnectionManager(cm).build();
+//        try {
             int id = 0;
-            WizzRequest wizz = new WizzRequest(id++,skad,dokad,month,year);
-            RyanRequest ryan = new RyanRequest(id++,skad,dokad,month,year);
-            
             ArrayList<HttpGetFlight> listReq = new ArrayList<HttpGetFlight>();
-            listReq.addAll(wizz.makeRequestList());
+            
+//            WizzRequest wizz = new WizzRequest(id++,skad,dokad,month,year);
+//            listReq.addAll(wizz.makeRequestList());
+            RyanRequest ryan = new RyanRequest(id++,skad,dokad,month,year);
             listReq.addAll(ryan.makeRequestList());
 
             GetThread[] threads = new GetThread[listReq.size()];
@@ -66,9 +88,10 @@ public class Connection {
     				decoder.decode();
     			}
             }
-        } finally {
-            httpclient.close();
-        }
+//        } 
+//        finally {
+//            httpclient.close();
+//        }
 	}
 	
 	static class GetThread extends Thread {
@@ -94,7 +117,7 @@ public class Connection {
                     HttpEntity entity = response.getEntity();
                     if (entity != null && response.getStatusLine().getStatusCode()==200) {
                     	byte[] bytes = EntityUtils.toByteArray(entity);
-                    	String s = new String(bytes, StandardCharsets.UTF_8);
+                    	String s = new String(bytes);
                     	if(s!=null) {
                     		setResponseString(s);
                     	}
