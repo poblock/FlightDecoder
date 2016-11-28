@@ -30,13 +30,13 @@ public class Connection {
 			cm = new PoolingHttpClientConnectionManager();
 	        cm.setMaxTotal(100);
 	        httpclient = HttpClients.custom().setConnectionManager(cm).build();
-//			connect("GDN","LTN",1,2017); // lista wszystkich polaczen
+			connect("GDN","BGY",1,2017); // lista wszystkich polaczen
 			
-			connect("GDN","WAW",1,2017); 
+//			connect("GDN","WAW",1,2017); 
 //			connect("BCN","SOF",1,2017);
 //			connect("KTW","BLQ",1,2017);
-//			connect("","",1,2017);
-//			connect("BEG","EIN",1,2017);
+//			connect("BGY","GDN",1,2017);
+//			connect("ATH","BGY",1,2017);
 //			connect("BGO","GDN",1,2017);
 //			connect("BRQ","LTN",1,2017);
 //			connect("BUD","BCN",1,2017);
@@ -67,8 +67,8 @@ public class Connection {
             int id = 0;
             ArrayList<HttpGetFlight> listReq = new ArrayList<HttpGetFlight>();
             
-//            WizzRequest wizz = new WizzRequest(id++,skad,dokad,month,year);
-//            listReq.addAll(wizz.makeRequestList());
+            WizzRequest wizz = new WizzRequest(id++,skad,dokad,month,year);
+            listReq.addAll(wizz.makeRequestList());
             RyanRequest ryan = new RyanRequest(id++,skad,dokad,month,year);
             listReq.addAll(ryan.makeRequestList());
 

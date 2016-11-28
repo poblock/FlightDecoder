@@ -30,8 +30,11 @@ public class RyanDecoder extends Decoder {
 						for(Date d : t.getDates()) {
 							if(d.getFlights()!=null && d.getFlights().size()>0) {
 								for(Flight f : d.getFlights()) {
-									RyanLotBuilder b = new RyanLotBuilder(t.getOrigin(), t.getDestination(), f, departure.getCurrency());
-									System.out.println(b.getLot());
+									if(f.getRegularFare()!=null && f.getRegularFare().getFares()!=null 
+											&& f.getRegularFare().getFares().size()>0) {
+										RyanLotBuilder builder = new RyanLotBuilder(t.getOrigin(), t.getDestination(), f, departure.getCurrency());
+										lista.add(builder.getLot());
+									}
 								}
 							}
 						}

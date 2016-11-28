@@ -171,7 +171,7 @@ public class LocaleConverter {
 		return INSTANCE;
 	}
 	
-	public String convertCurrency(String cena) {
+	public String convertWizzCurrency(String cena) {
 		Iterator<Entry<String, ArrayList<String>>> it = codes.entrySet().iterator();
 		while(it.hasNext()) {
 			Entry<String, ArrayList<String>> entry = it.next();
@@ -184,15 +184,19 @@ public class LocaleConverter {
 						value = value.replaceAll(",", ".");
 						value = value.replaceAll(" ","");
 						value = value.replaceAll(" ", "");
-						double dValue = Double.parseDouble(value);
-						double kurs = currencyValues.get(waluta);
-						BigDecimal bd = new BigDecimal(dValue*kurs).setScale(2, RoundingMode.HALF_UP);
-						return bd.toString();
+						return getAmount(value, waluta);
 					}
 				}
 			}
 		}
 		return null;
+	}
+	
+	public String getAmount(String value, String waluta) {
+		double dValue = Double.parseDouble(value);
+		double kurs = currencyValues.get(waluta);
+		BigDecimal bd = new BigDecimal(dValue*kurs).setScale(2, RoundingMode.HALF_UP);
+		return bd.toString();
 	}
 	
 	private DateTimeZone getDTZ(String code) {
@@ -207,18 +211,16 @@ public class LocaleConverter {
 	public String convertFlightTime(String skad, LocalDateTime przylot, String dokad, LocalDateTime wylot) {
 		DateTime wylotTZ = wylot.toDateTime(getDTZ(skad));
 		DateTime przylotTZ = przylot.toDateTime(getDTZ(dokad));
-//		System.out.println(skad+" "+wylotTZ);
-//		System.out.println(dokad+" "+przylotTZ);
 		Period p = new Period(wylotTZ,przylotTZ);
 		if(p.getHours()>=0 && p.getMinutes()>=0) {
 			String strH;
-			if(p.getHours()==0) {
+			if(p.getHours()<10) {
 				strH = "0"+String.valueOf(p.getHours());
 			} else {
 				strH = String.valueOf(p.getHours());
 			}
 			String strM;
-			if(p.getMinutes()==0) {
+			if(p.getMinutes()<10) {
 				strM = "0"+String.valueOf(p.getMinutes());
 			} else {
 				strM = String.valueOf(p.getMinutes());

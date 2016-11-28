@@ -3,6 +3,7 @@ package pl.poblock.connection.decode.ryan;
 import org.joda.time.LocalDateTime;
 
 import pl.poblock.connection.Lot;
+import pl.poblock.connection.decode.LocaleConverter;
 import pl.poblock.connection.decode.LotBuilder;
 import pl.poblock.connection.decode.ryan.model.Fare;
 import pl.poblock.connection.decode.ryan.model.Flight;
@@ -73,9 +74,10 @@ public class RyanLotBuilder implements LotBuilder {
 		if(flight!=null) {
 			if(flight.getRegularFare()!=null && flight.getRegularFare().getFares()!=null && flight.getRegularFare().getFares().size()>0) {
 				Fare first = flight.getRegularFare().getFares().get(0);
-				this.cena = first.getAmount();
+				this.cena = LocaleConverter.getInstance().getAmount(first.getAmount(), waluta);
 			}
 		}
+		lot.setCena(cena);
 	}
 
 	public void buildLinia() {
@@ -86,15 +88,25 @@ public class RyanLotBuilder implements LotBuilder {
 		if(flight!=null) {
 			if(flight.getTime()!=null && flight.getTime().size()>0 && flight.getTime().size()==2) {
 				this.czasWylotu = flight.getTime().get(0);
-				LocalDateTime ldt = new LocalDateTime(czasWylotu);
-				
-				System.out.println(czasWylotu+" "+new LocalDateTime(czasWylotu).toString()+" "+ldt.toDate());
+				String ldt = new LocalDateTime(czasWylotu).toString();
+				String[] data = ldt.split("T");
+				this.dataWylotu = data[0];
+				this.godzinaWylotu = data[1].substring(0, 5);
 			}
 		}
 		lot.setDataWylotu(dataWylotu);
 	}
 
 	public void buildDataPrzylotu() {
+		if(flight!=null) {
+			if(flight.getTime()!=null && flight.getTime().size()>0 && flight.getTime().size()==2) {
+				this.czasPrzylotu = flight.getTime().get(1);
+				String ldt = new LocalDateTime(czasPrzylotu).toString();
+				String[] data = ldt.split("T");
+				this.dataPrzylotu = data[0];
+				this.godzinaPrzylotu = data[1].substring(0, 5);
+			}
+		}
 		lot.setDataPrzylotu(dataPrzylotu);
 	}
 
@@ -103,11 +115,6 @@ public class RyanLotBuilder implements LotBuilder {
 	}
 
 	public void buildGodzinaPrzylotu() {
-		if(flight!=null) {
-			if(flight.getTime()!=null && flight.getTime().size()>0 && flight.getTime().size()==2) {
-				this.czasPrzylotu = flight.getTime().get(1);
-			}
-		}
 		lot.setGodzinaPrzylotu(godzinaPrzylotu);
 	}
 

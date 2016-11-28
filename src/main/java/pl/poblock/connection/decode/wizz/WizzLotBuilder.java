@@ -62,7 +62,7 @@ public class WizzLotBuilder implements LotBuilder {
 	}
 
 	public void buildCena() {
-		this.cena = LocaleConverter.getInstance().convertCurrency(cena);
+		this.cena = LocaleConverter.getInstance().convertWizzCurrency(cena);
 		lot.setCena(cena);
 	}
 
