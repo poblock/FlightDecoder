@@ -2,8 +2,8 @@ package pl.poblock.connection;
 
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import pl.poblock.connection.decode.Decoder;
 import pl.poblock.connection.decode.DecoderFactory;
 import pl.poblock.connection.request.HttpGetFlight;
+import pl.poblock.connection.request.RequestFactory;
 import pl.poblock.connection.request.RyanRequest;
 import pl.poblock.connection.request.WizzRequest;
 
@@ -30,29 +31,6 @@ public class Connection {
 			cm = new PoolingHttpClientConnectionManager();
 	        cm.setMaxTotal(100);
 	        httpclient = HttpClients.custom().setConnectionManager(cm).build();
-			connect("GDN","BGY",1,2017); // lista wszystkich polaczen
-			
-//			connect("GDN","WAW",1,2017); 
-//			connect("BCN","SOF",1,2017);
-//			connect("KTW","BLQ",1,2017);
-//			connect("BGY","GDN",1,2017);
-//			connect("ATH","BGY",1,2017);
-//			connect("BGO","GDN",1,2017);
-//			connect("BRQ","LTN",1,2017);
-//			connect("BUD","BCN",1,2017);
-//			connect("OTP","BCN",1,2017);
-//			connect("BOJ","LTN",1,2017);
-//			connect("VDA","WAW",1,2017);
-//			connect("GVA","OTP",1,2017);
-//			connect("GOT","WAW",1,2017);
-//			connect("IEV","LTN",1,2017);
-//			connect("TZL","LTN",1,2017);
-//			connect("SKP","LTN",1,2017);
-//			connect("KUT","WAW",1,2017);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -60,10 +38,28 @@ public class Connection {
 		}
 	}
 	
+	public void connect(List<Polaczenia> polaczenia, int month, int year) {
+		int id = 0;
+		
+//		HashMap<>
+		
+		for(Polaczenia lista : polaczenia) {
+			
+		}
+		
+        ArrayList<HttpGetFlight> listReq = new ArrayList<HttpGetFlight>();
+		for(Polaczenia lista : polaczenia) {
+			for(Polaczenie p : lista.getPolaczenia()) {
+				List<HttpGetFlight> list = RequestFactory.getRequestList(id, p, month, year);
+				if(list!=null) {
+					listReq.addAll(list);
+				}
+			}
+			id++;
+		}
+	}
+	
 	private void connect(String skad, String dokad, int month, int year) throws IOException, InterruptedException {
-//		CloseableHttpClient httpclient = 
-//        		HttpClients.custom().setConnectionManager(cm).build();
-//        try {
             int id = 0;
             ArrayList<HttpGetFlight> listReq = new ArrayList<HttpGetFlight>();
             
@@ -88,10 +84,6 @@ public class Connection {
     				decoder.decode();
     			}
             }
-//        } 
-//        finally {
-//            httpclient.close();
-//        }
 	}
 	
 	static class GetThread extends Thread {

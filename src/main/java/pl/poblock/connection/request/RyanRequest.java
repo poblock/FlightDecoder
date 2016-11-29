@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.joda.time.LocalDateTime;
 
-public class RyanRequest extends AbstractRequest {
+public class RyanRequest extends FlightRequest {
 
 	public RyanRequest(int id, String skad, String dokad, int month, int year) {
 		super(id, skad, dokad, month, year);
@@ -24,7 +24,7 @@ public class RyanRequest extends AbstractRequest {
 				String url = getCoreURL();
 				url += "&DateOut="+d.dataOd;
 				url += "&DateIn="+d.dataDo;
-				list.add(new HttpGetFlight(url,"Ryanair"));
+				list.add(new HttpGetFlight(getId(), url,"Ryanair"));
 			}
 		} else {
 			HttpGetFlight request = makeBasicRequest();
@@ -62,7 +62,7 @@ public class RyanRequest extends AbstractRequest {
 	protected HttpGetFlight makeBasicRequest() {
 		String url = getCoreURL();
 		if(url!=null) {
-			return new HttpGetFlight(url,"Ryanair");
+			return new HttpGetFlight(getId(), url,"Ryanair");
 		}
 		return null;
 	}

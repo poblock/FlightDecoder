@@ -2,19 +2,16 @@ package pl.poblock.connection.request;
 
 import java.util.List;
 
-public abstract class AbstractRequest {
+public abstract class FlightRequest {
 	private String coreURL = null;
 	private String skad = null;
 	private String dokad = null;
 	private int month = -1;
 	private int year = -1;
+	private int id = -1;
 	
-	public AbstractRequest(int id, String skad, String dokad) {
-		setSkad(skad);
-		setDokad(dokad);
-	}
-	
-	public AbstractRequest(int id, String skad, String dokad, int month, int year) {
+	public FlightRequest(int id, String skad, String dokad, int month, int year) {
+		setId(id);
 		setSkad(skad);
 		setDokad(dokad);
 		setMonth(month);
@@ -24,6 +21,12 @@ public abstract class AbstractRequest {
 	protected abstract HttpGetFlight makeBasicRequest();
 	public abstract List<HttpGetFlight> makeRequestList();
 	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getSkad() {
 		return skad;
 	}

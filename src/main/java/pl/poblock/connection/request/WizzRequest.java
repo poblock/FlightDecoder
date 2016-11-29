@@ -3,7 +3,7 @@ package pl.poblock.connection.request;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WizzRequest extends AbstractRequest {
+public class WizzRequest extends FlightRequest {
 	
 	public WizzRequest(int id, String skad, String dokad, int month, int year) {
 		super(id, skad, dokad, month, year);
@@ -41,7 +41,7 @@ public class WizzRequest extends AbstractRequest {
 	protected HttpGetFlight makeBasicRequest() {
 		String url = getCoreURL();
 		if(url!=null) {
-			return new HttpGetFlight(url,"Wizzair");
+			return new HttpGetFlight(getId(),url,"Wizzair");
 		}
 		return null;
 	}
