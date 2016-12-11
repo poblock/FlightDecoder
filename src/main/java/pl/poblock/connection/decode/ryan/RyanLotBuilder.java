@@ -2,11 +2,11 @@ package pl.poblock.connection.decode.ryan;
 
 import org.joda.time.LocalDateTime;
 
-import pl.poblock.connection.Lot;
 import pl.poblock.connection.decode.LocaleConverter;
 import pl.poblock.connection.decode.LotBuilder;
 import pl.poblock.connection.decode.ryan.model.Fare;
 import pl.poblock.connection.decode.ryan.model.Flight;
+import pl.poblock.model.response.Lot;
 
 public class RyanLotBuilder implements LotBuilder {
 

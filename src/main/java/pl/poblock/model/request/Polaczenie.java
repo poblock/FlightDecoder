@@ -1,4 +1,4 @@
-package pl.poblock.connection;
+package pl.poblock.model.request;
 
 public class Polaczenie {
 	private int id;
@@ -6,12 +6,6 @@ public class Polaczenie {
 	private String dokad;
 	private String linia;
 	public Polaczenie(String skad, String dokad, String linia) {
-		this.skad = skad;
-		this.dokad = dokad;
-		this.linia = linia;
-	}
-	public Polaczenie(int id, String skad, String dokad, String linia) {
-		this.id = id;
 		this.skad = skad;
 		this.dokad = dokad;
 		this.linia = linia;

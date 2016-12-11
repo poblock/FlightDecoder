@@ -2,10 +2,10 @@ package pl.poblock.connection.decode.wizz;
 
 import org.joda.time.LocalDateTime;
 
-import pl.poblock.connection.Lot;
 import pl.poblock.connection.decode.LocaleConverter;
 import pl.poblock.connection.decode.LotBuilder;
 import pl.poblock.connection.decode.wizz.model.Flight;
+import pl.poblock.model.response.Lot;
 
 public class WizzLotBuilder implements LotBuilder {
 	private Lot lot;

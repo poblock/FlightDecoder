@@ -1,6 +1,6 @@
 package pl.poblock.connection.decode;
 
-import pl.poblock.connection.Lot;
+import pl.poblock.model.response.Lot;
 
 public interface LotBuilder {
 	public Lot getLot();

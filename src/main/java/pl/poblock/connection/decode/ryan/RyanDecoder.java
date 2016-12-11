@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import pl.poblock.connection.Lot;
 import pl.poblock.connection.decode.Decoder;
 import pl.poblock.connection.decode.ryan.model.Date;
 import pl.poblock.connection.decode.ryan.model.Departure;
 import pl.poblock.connection.decode.ryan.model.Flight;
 import pl.poblock.connection.decode.ryan.model.Trip;
+import pl.poblock.model.response.Lot;
 
 
 public class RyanDecoder extends Decoder {
@@ -42,7 +42,6 @@ public class RyanDecoder extends Decoder {
 				}
 			}
 		}
-		System.out.println(lista);
 		return lista;
 	}
 }

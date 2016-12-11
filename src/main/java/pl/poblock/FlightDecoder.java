@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import pl.poblock.connection.Connection;
-import pl.poblock.connection.Polaczenia;
-import pl.poblock.connection.Polaczenie;
+import pl.poblock.model.request.Polaczenia;
+import pl.poblock.model.request.Polaczenie;
 
 public class FlightDecoder {
 	
@@ -14,11 +14,15 @@ public class FlightDecoder {
 	}
 
 	public FlightDecoder() {
+		Connection c = null;
 		try {
 			ArrayList<Polaczenia> mockList = prepareMockList();
-			Connection c = new Connection();
+			c = new Connection();
+			c.connect(mockList, 1, 2017);
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			c.close();
 		}
 	}
 	
@@ -26,10 +30,10 @@ public class FlightDecoder {
 		ArrayList<Polaczenia> opcje = new ArrayList<Polaczenia>();
 		long id = 0;
 		opcje.add(add(id++, new Polaczenie("GDN","BGY","Wizzair"),new Polaczenie("BGY","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
-		opcje.add(add(id++, new Polaczenie("GDN","BGY","Ryanair"),new Polaczenie("BGY","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
+//		opcje.add(add(id++, new Polaczenie("GDN","BGY","Ryanair"),new Polaczenie("BGY","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
 		opcje.add(add(id++, new Polaczenie("GDN","CRL","Wizzair"),new Polaczenie("CRL","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
-		opcje.add(add(id++, new Polaczenie("WMI","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
-		opcje.add(add(id++, new Polaczenie("SXF","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
+//		opcje.add(add(id++, new Polaczenie("WMI","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
+//		opcje.add(add(id++, new Polaczenie("SXF","ATH","Ryanair"),new Polaczenie("ATH","JTR","Ryanair")));
 		return opcje;
 	}
 	

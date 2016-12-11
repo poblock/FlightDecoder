@@ -1,4 +1,4 @@
-package pl.poblock.connection;
+package pl.poblock.model.response;
 
 public class Lot {
 	private String skad;
@@ -157,7 +157,9 @@ public class Lot {
 	@Override
 	public String toString() {
 		return "Lot [skad=" + skad + ", dokad=" + dokad + ", linia=" + linia + ", dataWylotu=" + dataWylotu
-				+ ", godzinaWylotu=" + godzinaWylotu + ", dataPrzylotu=" + dataPrzylotu + ", godzinaPrzylotu="
-				+ godzinaPrzylotu + ", czasLotu=" + czasLotu + ", cena=" + cena + "]";
+				+ ", godzinaWylotu=" + godzinaWylotu 
+//				+ ", dataPrzylotu=" + dataPrzylotu + ", godzinaPrzylotu="
+//				+ godzinaPrzylotu + ", czasLotu=" + czasLotu 
+				+ ", cena=" + cena + "]";
 	}
 }

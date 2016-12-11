@@ -2,7 +2,7 @@ package pl.poblock.connection.decode;
 
 import java.util.List;
 
-import pl.poblock.connection.Lot;
+import pl.poblock.model.response.Lot;
 
 public abstract class Decoder {
 	protected String response;
