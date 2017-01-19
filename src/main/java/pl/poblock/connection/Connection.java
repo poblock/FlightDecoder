@@ -30,6 +30,7 @@ import pl.poblock.model.request.Polaczenia;
 import pl.poblock.model.request.Polaczenie;
 import pl.poblock.model.response.Lot;
 import pl.poblock.model.response.Loty;
+import pl.poblock.model.response.Podroz;
 
 public class Connection {
 	
@@ -45,8 +46,9 @@ public class Connection {
 		}
 	}
 	
-	public void connect(List<Polaczenia> polaczenia, int month, int year) {
+	public List<Podroz> connect(List<Polaczenia> polaczenia, int month, int year, int top) {
         try {
+        	HashMap<Polaczenie, Integer> uniqueID = new HashMap<Polaczenie, Integer>();
     		HashMap<Polaczenie, LinkedList<Long>> uniqueMap = new HashMap<Polaczenie, LinkedList<Long>>();
     		Random r = new Random();
     		for(Polaczenia lista : polaczenia) {
@@ -54,16 +56,25 @@ public class Connection {
     				long listaID = lista.getId();
     				if(uniqueMap.containsKey(p)) {
     					uniqueMap.get(p).add(listaID);
+    					Integer id = uniqueID.get(p);
+    					p.setId(id);  					
     				} else {
     					LinkedList<Long> l = new LinkedList<Long>();
     					l.add(listaID);
-    					p.setId(r.nextInt(100));
-    					uniqueMap.put(p, l);
+    					boolean isUnique = false;
+    					Integer i = -1;
+    					while(!isUnique) {
+    						i = r.nextInt(1000);
+    						isUnique = !uniqueID.values().contains(i);
+    					}
+    					if(i!=-1) {
+    						p.setId(i);
+        					uniqueID.put(p, i);
+        					uniqueMap.put(p, l);
+    					}
     				}
     			}
     		}
-    		System.out.println(polaczenia);
-    		System.out.println(uniqueMap);
     		ArrayList<HttpGetFlight> listReq = new ArrayList<HttpGetFlight>();
             Iterator<Polaczenie> it = uniqueMap.keySet().iterator();
             while(it.hasNext()) {
@@ -96,24 +107,27 @@ public class Connection {
                 	}
                 }
                 
+                boolean czyPolaczeniaTam = true;
                 PodrozManager pManager = new PodrozManager();
                 for(Polaczenia pol : polaczenia) {
-                	ArrayList<Loty> wyniki = prepareJourney(pol, flightsFrom, true);
+                	ArrayList<Loty> wyniki = prepareJourney(pol, flightsFrom, czyPolaczeniaTam);
                 	if(wyniki!=null) {
-                		pManager.dodajPolaczeniaTam(pol, wyniki);
+                		pManager.dodajPolaczenia(pol, wyniki, czyPolaczeniaTam);
                 	}
                 }
+                czyPolaczeniaTam = false;
                 for(Polaczenia pol : polaczenia) {
-                	ArrayList<Loty> wyniki = prepareJourney(pol, flightsReturn, false);
+                	ArrayList<Loty> wyniki = prepareJourney(pol, flightsReturn, czyPolaczeniaTam);
                 	if(wyniki!=null) {
-                		pManager.dodajPolaczeniaPowrot(pol, wyniki);
+                		pManager.dodajPolaczenia(pol, wyniki, czyPolaczeniaTam);
                 	}
                 }
-                pManager.wypisz(); 
+                return pManager.szukaj(top);
         	}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+        return null;
 	}
 	
 	private ArrayList<Loty> prepareJourney(Polaczenia polaczenia, HashMap<Integer, List<Lot>> map, boolean isTam) {		
@@ -124,7 +138,7 @@ public class Connection {
 				Polaczenie nextStage = it.next();
 				List<Lot> listaLotow = map.get(nextStage.getId());
 				if(listaLotow!=null) {
-					manager.dodajKolejnyEtap(listaLotow);
+					manager.dodajKolejnyEtap(listaLotow, isTam);
 				}
 			}
 		} else {
@@ -133,7 +147,7 @@ public class Connection {
 				Polaczenie previousStage = li.previous();
 				List<Lot> listaLotow = map.get(previousStage.getId());
 				if(listaLotow!=null) {
-					manager.dodajKolejnyEtap(listaLotow);
+					manager.dodajKolejnyEtap(listaLotow, isTam);
 				}
 			}
 		}

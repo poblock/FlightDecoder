@@ -7,11 +7,11 @@ import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.LocalDateTime;
 
+import pl.poblock.FlightDecoder;
 import pl.poblock.model.response.Lot;
 import pl.poblock.model.response.Loty;
 
 public class LotManager {
-	private static final Double MAX_SUMA_LOTOW_W_JEDNA_STRONE = 1000.00;
 	private ArrayList<Loty> arrayLoty = new ArrayList<Loty>();
 	private int etapIteration = 0;
 	
@@ -36,17 +36,17 @@ public class LotManager {
 		return ldt.isAfter(last) && (days==0 || days==1) && (hours > 1);
 	}
 	
-	public void dodajKolejnyEtap(List<Lot> listaLotow) {
+	public void dodajKolejnyEtap(List<Lot> listaLotow, boolean isTam) {
 		etapIteration++;
 		for(Lot l : listaLotow) {
 			if(etapIteration == 1) {
 				Loty loty = new Loty();
-				loty.dodajLot(l);
+				loty.dodajLot(l, isTam);
 				arrayLoty.add(loty);
 			} else {
 				Loty loty = znajdzLoty(l);
 				if(loty!=null) {
-					loty.dodajLot(l);
+					loty.dodajLot(l, isTam);
 					arrayLoty.add(loty);
 				}
 			}
@@ -71,7 +71,7 @@ public class LotManager {
 	public ArrayList<Loty> dajTanieLoty() {
 		ArrayList<Loty> kopia = new ArrayList<Loty>();
 		for(Loty loty : arrayLoty) {
-			if(loty.getSuma() < MAX_SUMA_LOTOW_W_JEDNA_STRONE) {
+			if(loty.getSuma() < FlightDecoder.MAX_SUMA_LOTOW_W_JEDNA_STRONE) {
 				kopia.add(loty);
 			}
 		}

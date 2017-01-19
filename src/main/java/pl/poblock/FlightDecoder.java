@@ -2,12 +2,17 @@ package pl.poblock;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import pl.poblock.connection.Connection;
 import pl.poblock.model.request.Polaczenia;
 import pl.poblock.model.request.Polaczenie;
+import pl.poblock.model.response.Podroz;
 
 public class FlightDecoder {
+	
+	public static final Double MAX_SUMA_LOTOW_W_JEDNA_STRONE = 800.00;
+	public static final Integer MAX_LICZBA_DNI = 5;
 	
 	public static void main(String[] args) {
 		new FlightDecoder();
@@ -18,7 +23,8 @@ public class FlightDecoder {
 		try {
 			ArrayList<Polaczenia> mockList = prepareMockList();
 			c = new Connection();
-			c.connect(mockList, 1, 2017);
+			List<Podroz> wynik = c.connect(mockList, 3, 2017, 5);
+			System.out.println(wynik);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
