@@ -71,7 +71,7 @@ public class LotManager {
 	public ArrayList<Loty> dajTanieLoty() {
 		ArrayList<Loty> kopia = new ArrayList<Loty>();
 		for(Loty loty : arrayLoty) {
-			if(loty.getSuma() < FlightDecoder.MAX_SUMA_LOTOW_W_JEDNA_STRONE) {
+			if(loty.getSuma() < FlightDecoder.MAX_CENA_W_JEDNA_STRONE) {
 				kopia.add(loty);
 			}
 		}

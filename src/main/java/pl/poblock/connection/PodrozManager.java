@@ -64,7 +64,7 @@ public class PodrozManager {
 		System.out.println("---------------\nPodroze Powrotne");
 		System.out.println(mapaDatPowrot.toString());
 	}
-	public List<Podroz> szukaj(int top) {
+	public List<Podroz> szukaj() {
 		Iterator<Entry<LocalDateTime, Loty>> it = mapaDatTam.entrySet().iterator();
 		while(it.hasNext()) {
 			Entry<LocalDateTime, Loty> tam = it.next();
@@ -77,10 +77,10 @@ public class PodrozManager {
 			}
 		}
 		if(!mapaCen.isEmpty()) {
-			List<Podroz> lista = new ArrayList<Podroz>(top);
+			List<Podroz> lista = new ArrayList<Podroz>(FlightDecoder.TOP_OFERT);
 			Iterator<Podroz> ite = mapaCen.values().iterator();
 			int count = 0;
-			while(ite.hasNext() && count<top) {
+			while(ite.hasNext() && count<FlightDecoder.TOP_OFERT) {
 				lista.add(ite.next());
 				count++;
 			}

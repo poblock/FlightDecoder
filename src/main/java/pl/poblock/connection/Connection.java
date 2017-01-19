@@ -46,7 +46,7 @@ public class Connection {
 		}
 	}
 	
-	public List<Podroz> connect(List<Polaczenia> polaczenia, int month, int year, int top) {
+	public List<Podroz> connect(List<Polaczenia> polaczenia, int month, int year) {
         try {
         	HashMap<Polaczenie, Integer> uniqueID = new HashMap<Polaczenie, Integer>();
     		HashMap<Polaczenie, LinkedList<Long>> uniqueMap = new HashMap<Polaczenie, LinkedList<Long>>();
@@ -122,7 +122,7 @@ public class Connection {
                 		pManager.dodajPolaczenia(pol, wyniki, czyPolaczeniaTam);
                 	}
                 }
-                return pManager.szukaj(top);
+                return pManager.szukaj();
         	}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
