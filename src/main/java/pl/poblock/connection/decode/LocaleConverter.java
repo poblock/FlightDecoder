@@ -20,7 +20,7 @@ public class LocaleConverter {
 			{"lv"}, //BGN
 			{"SFr"}, //CHF
 			{"Kƒç"}, //CZK
-			{"Ä","‚Ç¨"}, //EUR
+			{"Ä","‚Ç¨"}, //EUR TODO
 			{"¬£"}, //GBP
 			{"GEL"}, //GEL
 			{}, //HRK
@@ -28,7 +28,7 @@ public class LocaleConverter {
 			{"‚Ç™"}, //ILS
 			{"MKD"}, //MKD
 			{"kr"}, //NOKSEK
-			{"z≥","z≈Ç"}, //PLN
+			{"z≥","z≈Ç"}, //PLN TODO
 			{"lei"}, //RON
 			{"din"}, //RSD
 			{"UAH"}, //UAH
