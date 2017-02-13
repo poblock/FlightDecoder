@@ -12,6 +12,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 
+import pl.poblock.FlightDecoder;
+
 public class LocaleConverter {
 	private String[] currencies = {"AED","BAM","BGN","CHF","CZK","EUR","GBP","GEL","HRK","HUF","ILS","MKD","NOKSEK","PLN","RON","RSD","UAH","USD"};
 	private String[][] alternatives = {
@@ -184,7 +186,11 @@ public class LocaleConverter {
 						value = value.replaceAll(",", ".");
 						value = value.replaceAll(" ","");
 						value = value.replaceAll(" ", "");
-						return getAmount(value, waluta);
+						if(FlightDecoder.CZY_WDC) {
+							return getDiscountAmount(value, waluta);
+						} else {
+							return getAmount(value, waluta);
+						}
 					}
 				}
 			}
@@ -192,11 +198,26 @@ public class LocaleConverter {
 		return null;
 	}
 	
+	public String getDiscountAmount(String value, String waluta) {
+		double dValue = Double.parseDouble(value);
+		double kurs = currencyValues.get(waluta);
+		double cena = roundValue(dValue*kurs).doubleValue();
+		if(cena > 75) {
+			cena -= 45.0;
+		} else {
+			cena = 39.0;
+		}
+		return roundValue(cena).toString();
+	}
+	
+	private BigDecimal roundValue(double value) {
+		return new BigDecimal(value).setScale(2, RoundingMode.HALF_UP);
+	}
+	
 	public String getAmount(String value, String waluta) {
 		double dValue = Double.parseDouble(value);
 		double kurs = currencyValues.get(waluta);
-		BigDecimal bd = new BigDecimal(dValue*kurs).setScale(2, RoundingMode.HALF_UP);
-		return bd.toString();
+		return roundValue(dValue*kurs).toString();
 	}
 	
 	private DateTimeZone getDTZ(String code) {
